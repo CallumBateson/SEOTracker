@@ -2,21 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { WatcherDto } from './api/client';
 import { WatcherService } from './api/WatcherService';
-
-interface WatcherRowProps {
-    watcher: WatcherDto,
-    onSelect: (watcher: WatcherDto) => void
-}
-
-const WatcherRow = ({ watcher, onSelect }: WatcherRowProps) => {
-    return (
-        <tr onClick={() => onSelect(watcher)} style={{ cursor: "pointer" }}>
-            <td>{watcher.name}</td>
-            <td>{watcher.searchTerm}</td>
-            <td>{watcher.targetUrl}</td>
-        </tr>
-    );
-};
+import WatcherRow from './WatcherRow';
 
 const WatchersTable = ({ onSelect } : { onSelect: (watcher: WatcherDto) => void }) => {
     const [watchers, setWatchers] = useState<WatcherDto[]>();
@@ -41,7 +27,7 @@ const WatchersTable = ({ onSelect } : { onSelect: (watcher: WatcherDto) => void 
             </thead>
             <tbody>
                 {watchers.map(watcher => (
-                    <WatcherRow key={watcher.id} watcher={watcher} onSelect={onSelect} />
+                    <WatcherRow key={watcher.id} watcher={watcher} onSelect={onSelect} onDelete={OnDeleteWatcher} />
                 ))}
             </tbody>
         </table>
@@ -50,6 +36,12 @@ const WatchersTable = ({ onSelect } : { onSelect: (watcher: WatcherDto) => void 
     async function populateWatcherData() {
         var watcherData = await client.list();
         setWatchers(watcherData);
+    }
+
+    async function OnDeleteWatcher(watcher: WatcherDto) {
+        const updatedWatchers = watchers?.filter(o => o.id !== watcher.id);
+        setWatchers(updatedWatchers);
+        await client.watcherDELETE(watcher.id!);
     }
 };
 
