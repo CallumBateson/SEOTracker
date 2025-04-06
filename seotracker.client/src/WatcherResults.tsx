@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import './App.css';
 import { WatcherService } from './api/WatcherService';
 import { DateOnly, WatcherDto, WatcherResultDto } from './api/client';
 
@@ -13,17 +12,18 @@ const WatcherResults = ({ watcher, navigateBack }: { watcher: WatcherDto, naviga
     }, []);
 
     return (
-        <div className="watcher-results-container">
+        <div>
             <h2>Selected Watcher</h2>
             <p><strong>Name:</strong> {watcher.name}</p>
-            <button onClick={navigateBack} className="back-button">Back to Table</button>
+            <button onClick={navigateBack}>Back to Table</button>
+            <span style={{ display: 'inline-block', width: '10px'}}/>
             <button onClick={refreshTodaysData}>Refresh Todays Data</button>
             
             {/* Loading state */}
             {watcherResults === null ? (
-                <div className="loading">Loading results...</div>
+                <div>Loading results...</div>
             ) : (
-                <div className="results-table">
+                <div>
                     <h3>Watcher Results</h3>
                     <table>
                         <thead>
@@ -34,15 +34,14 @@ const WatcherResults = ({ watcher, navigateBack }: { watcher: WatcherDto, naviga
                         </thead>
                         <tbody>
                             {watcherResults?.map((result, index) => (
-                                <tr key={index} className="result-row">
+                                <tr key={index}>
                                     <td>{formatDate(result.date)}</td>
                                     <td>
                                         {result.indexes ? (
-                                            <div className="heatmap">
+                                            <div>
                                                 {result.indexes.map((indexValue, idx) => (
                                                     <div 
-                                                        key={idx} 
-                                                        className="heatmap-cell"
+                                                        key={idx}
                                                         style={{ 
                                                             backgroundColor: getColorForIndex(indexValue),
                                                             width: '40px',

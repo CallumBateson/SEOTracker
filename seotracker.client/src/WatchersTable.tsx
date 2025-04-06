@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import './App.css';
 import { WatcherDto } from './api/client';
 import { WatcherService } from './api/WatcherService';
 import WatcherRow from './WatcherRow';
@@ -20,7 +19,8 @@ const WatchersTable = ({ onSelect } : { onSelect: (watcher: WatcherDto) => void 
     return (
         <>
             <NewWatcherForm onSubmit={OnNewWatcher}/>
-            <table className="table table-striped" aria-labelledby="tableLabel">
+            <div style={{ padding: "10px" }}/>
+            <table aria-labelledby="tableLabel">
                 <thead>
                     <tr>
                         <th>Name</th>
