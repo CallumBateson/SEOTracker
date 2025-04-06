@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { WatcherClient, WatcherDto } from './api/client';
+import { WatcherDto } from './api/client';
+import { WatcherService } from './api/WatcherService';
 
 interface WatcherRowProps {
     watcher: WatcherDto,
@@ -19,7 +20,7 @@ const WatcherRow = ({ watcher, onSelect }: WatcherRowProps) => {
 
 const WatchersTable = ({ onSelect } : { onSelect: (watcher: WatcherDto) => void }) => {
     const [watchers, setWatchers] = useState<WatcherDto[]>();
-    const client = new WatcherClient("https://localhost:7255");
+    const client = new WatcherService();
 
     useEffect(() => {
         populateWatcherData();
