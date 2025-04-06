@@ -1,0 +1,6 @@
+@SEOTracker.Server_HostAddress = http://localhost:5277
+
+GET {{SEOTracker.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
