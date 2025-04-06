@@ -17,6 +17,7 @@ const WatcherResults = ({ watcher, navigateBack }: { watcher: WatcherDto, naviga
             <h2>Selected Watcher</h2>
             <p><strong>Name:</strong> {watcher.name}</p>
             <button onClick={navigateBack} className="back-button">Back to Table</button>
+            <button onClick={refreshTodaysData}>Refresh Todays Data</button>
             
             {/* Loading state */}
             {watcherResults === null ? (
@@ -76,6 +77,11 @@ const WatcherResults = ({ watcher, navigateBack }: { watcher: WatcherDto, naviga
     async function populateWatcherResults(watcherId: number) {
         const results = await client.results(watcherId);
         setWatcherResults(results);
+    }
+
+    async function refreshTodaysData() {
+        await client.refresh(watcher.id!);
+        await populateWatcherResults(watcher.id!);
     }
 
     function formatDate(date?: DateOnly): string {
