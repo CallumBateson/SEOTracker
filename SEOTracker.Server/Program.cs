@@ -1,4 +1,8 @@
 
+using Database;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+
 namespace SEOTracker.Server
 {
     public class Program
@@ -13,6 +17,14 @@ namespace SEOTracker.Server
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            //Get config
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
+            
+            // Create entity context and connect to connection string in app settings
+            builder.Services.AddDbContext<EntityContext>(options => options.UseSqlServer(configuration["DbConnectionString"]));
 
             var app = builder.Build();
 
