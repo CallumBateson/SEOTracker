@@ -26,6 +26,7 @@ namespace SEOTracker.Server
             // Create entity context and connect to connection string in app settings
             builder.Services.AddDbContext<EntityContext>(options => options.UseSqlServer(configuration["DbConnectionString"]));
             builder.Services.AddScoped<WatcherService>();
+            builder.Services.AddHostedService<BackgroundWatchingService>();
 
             builder.Services.AddCors(options =>
             {

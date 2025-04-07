@@ -14,6 +14,18 @@ public class WatcherService
         _context = context;
     }
 
+    public async Task CreateResultsForAllWatchers()
+    {
+        var watcherIds = await _context.Watcher
+            .Select(w => w.Id)
+            .ToListAsync();
+
+        foreach (var watcherId in watcherIds)
+        {
+            await this.CreateWatcherResults(watcherId);
+        }
+    }
+
     public async Task CreateWatcherResults(int watcherId)
     {
         var watcherDetails = await _context.Watcher
@@ -50,10 +62,16 @@ public class WatcherService
         List<string> urls = new();
         string searchUrl = $"https://www.google.com/search?q={Uri.EscapeDataString(searchTerm)}&num=100";
 
-        using HttpClient client = new();
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+        string html = String.Empty;
+        using (var handler = new HttpClientHandler { UseCookies = true })
+        using (var client = new HttpClient(handler))
+        {
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+            //client.DefaultRequestHeaders.Add("Cookie", "SOCS=CAISHAgCEhJnd3NfMjAyNTA0MDItMF9SQzEaAmVuIAEaBgiAq8y_Bg");
 
-        string html = await client.GetStringAsync(searchUrl);
+            html = await client.GetStringAsync(searchUrl);
+        }
+
         HtmlDocument doc = new();
         doc.LoadHtml(html);
 
