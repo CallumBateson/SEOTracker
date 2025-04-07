@@ -21,6 +21,47 @@ Due to issues accessing Google results programmatically without using their API,
     Install-Package Microsoft.EntityFrameworkCore.Tools
     Update-Database -Connection "[YOUR CONNECTION STRING HERE]"
     ```
-10. Override the `DBConnectionString` property in `SEOTracker.Server/appsettings.json` to your connection string.
-11. Ensure that both the Client and Server projects are set as startup projects, click start in Visual Studio and accept any local certificates. This will automatically open a browser running the client code.
-12. Create a watcher with the search term: `land registry searches` and target url: `www.infotrack.co.uk`.
+    **Alternatively**: <details><summary>Run the following script on your database</summary>
+   ```
+   CREATE TABLE [dbo].[Watcher](
+    	[Id] [int] IDENTITY(1,1) NOT NULL,
+    	[Name] [nvarchar](max) NOT NULL,
+    	[SearchTerm] [nvarchar](max) NOT NULL,
+    	[TargetUrl] [nvarchar](max) NOT NULL,
+     CONSTRAINT [PK_Watcher] PRIMARY KEY CLUSTERED 
+    (
+    	[Id] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+    GO
+    
+    CREATE TABLE [dbo].[WatcherResult](
+    	[Id] [int] IDENTITY(1,1) NOT NULL,
+    	[WatcherId] [int] NOT NULL,
+    	[CreationDate] [datetime2](7) NOT NULL,
+    	[Index] [int] NOT NULL,
+     CONSTRAINT [PK_WatcherResult] PRIMARY KEY CLUSTERED 
+    (
+    	[Id] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY]
+    GO
+    
+    CREATE NONCLUSTERED INDEX [IX_WatcherResult_WatcherId] ON [dbo].[WatcherResult]
+    (
+    	[WatcherId] ASC
+    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    GO
+    
+    ALTER TABLE [dbo].[WatcherResult]  WITH CHECK ADD  CONSTRAINT [FK_WatcherResult_Watcher_WatcherId] FOREIGN KEY([WatcherId])
+    REFERENCES [dbo].[Watcher] ([Id])
+    ON DELETE CASCADE
+    GO
+    
+    ALTER TABLE [dbo].[WatcherResult] CHECK CONSTRAINT [FK_WatcherResult_Watcher_WatcherId]
+    GO
+    ```
+   </details>
+11. Override the `DBConnectionString` property in `SEOTracker.Server/appsettings.json` to your connection string.
+12. Ensure that both the Client and Server projects are set as startup projects, click start in Visual Studio and accept any local certificates. This will automatically open a browser running the client code.
+13. Create a watcher with the search term: `land registry searches` and target url: `www.infotrack.co.uk`.
