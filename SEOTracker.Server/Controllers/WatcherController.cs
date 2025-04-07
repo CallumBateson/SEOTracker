@@ -92,10 +92,11 @@ namespace SEOTracker.Server.Controllers
             var results = await _context.WatcherResult
                 .Where(wr => wr.WatcherId == watcherId)
                 .GroupBy(wr => wr.CreationDate.Date)
+                .OrderByDescending(g => g.Key)
                 .Select(g => new WatcherResultDto
                 {
                     Date = DateOnly.FromDateTime(g.Key.Date),
-                    Indexes = g.Select(wr => wr.Index).ToList()
+                    Indexes = g.Select(wr => wr.Index).OrderBy(index => index).ToList()
                 }).ToListAsync();
 
             return this.Ok(results);

@@ -8,6 +8,7 @@ namespace SEOTracker.Server;
 public class WatcherService
 {
     private readonly EntityContext _context;
+    private const bool DemoMode = true;
 
     public WatcherService(EntityContext context)
     {
@@ -36,10 +37,23 @@ public class WatcherService
                 w.SearchTerm
             }).SingleAsync();
 
-        var urls = await this.SearchGoogle(watcherDetails.SearchTerm);
-        var targetIndexes = this.DetermineIndexesOfTargetUrl(urls, watcherDetails.TargetUrl);
+        List<int> targetIndexes;
+
+        // Unfortunately google is quite resistant to attempts to search without having certain cookies which indicate that the user has accepted their cookie and privacy policies.
+        // Therefore, demo mode has been added to showcase the intended functionality of the app.
+        if (!DemoMode)
+        {
+            var urls = await this.SearchGoogle(watcherDetails.SearchTerm);
+            targetIndexes = this.DetermineIndexesOfTargetUrl(urls, watcherDetails.TargetUrl).ToList();
+        }
+        else
+        {
+            var random = new Random();
+            targetIndexes = Enumerable.Range(1, 100).OrderBy(x => Guid.NewGuid()).Take(random.Next(1, 10)).ToList();
+        }
 
         var existingResultsForToday = await _context.WatcherResult
+            .Where(wr => wr.WatcherId == watcherId)
             .Where(wr => wr.CreationDate.Date == DateTime.UtcNow.Date)
             .ToListAsync();
 
@@ -67,6 +81,7 @@ public class WatcherService
         using (var client = new HttpClient(handler))
         {
             client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+            // TODO: Adding the right cookie combination below should allow this flow to work.
             //client.DefaultRequestHeaders.Add("Cookie", "SOCS=CAISHAgCEhJnd3NfMjAyNTA0MDItMF9SQzEaAmVuIAEaBgiAq8y_Bg");
 
             html = await client.GetStringAsync(searchUrl);
