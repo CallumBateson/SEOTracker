@@ -11,10 +11,12 @@ namespace SEOTracker.Server.Controllers
     public class WatcherController : ControllerBase
     {
         private readonly EntityContext _context;
+        private readonly WatcherService _watcherService;
 
-        public WatcherController(EntityContext context)
+        public WatcherController(EntityContext context, WatcherService watcherService)
         {
             _context = context;
+            _watcherService = watcherService;
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace SEOTracker.Server.Controllers
             _context.Watcher.Add(entity);
             await _context.SaveChangesAsync();
 
-            // TODO: Automatically generate today's results.
+            await _watcherService.CreateWatcherResults(entity.Id);
 
             return this.Ok(entity.Id);
         }
@@ -107,7 +109,7 @@ namespace SEOTracker.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> RefreshWatcherResults(int watcherId)
         {
-            //Todo: Refresh results
+            await _watcherService.CreateWatcherResults(watcherId);
 
             return this.Ok();
         }

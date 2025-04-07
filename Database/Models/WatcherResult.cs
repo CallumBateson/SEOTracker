@@ -7,5 +7,5 @@ public class WatcherResult
     public DateTime CreationDate { get; set; }
     public int Index { get; set; }
 
-    public required Watcher Watcher { get; set; }
+    public Watcher Watcher { get; set; } = null!;
 }
